@@ -1,0 +1,28 @@
+
+  Tomando en cuenta que el archivo csv cuenta con 18 columnas
+  dispuestas de la siguiente manera:
+
+                                                                lun         mar         mie         jue         vie         sab
+ num | profesor | clave | materia | gpo | capacidad_maxima | ini | fin | ini | fin | ini | fin | ini | fin | ini | fin | ini | fin | 
+
+ índices:
+
+
+    0 : num
+    1 : profesor
+    2 : cve
+    3 : materia
+    4 : gpo
+    5 : capacidad_maxima
+    6 : inicio lunes
+    7 : fin lunes
+    8 : inicio martes
+    9 : fin martes
+    10 : inicio miercoles
+    11 : fin miercoles
+    12 : inicio jueves
+    13 : fin jueves
+    14 : inicio viernes
+    15 : fin viernes
+    16 : inicio sabado
+    17 : fin sabado
