@@ -1,7 +1,10 @@
 import csv
+import json
+from horarios.horarios import HorarioClase
+import pprint
 
 
-class LectorWrapper:
+class LectorCSV:
     """
     Wrapper de la clase DictReader de csv.
     Toma como parámetros de entrada el nombre de un archivo csv.
@@ -11,6 +14,10 @@ class LectorWrapper:
 
         self.archivo = None
         self.dict_reader = None
+
+    def __del__(self):
+        if self.archivo is not None:
+            self.archivo.close()
 
     def set_archivo(self, nom_archivo):
         """
@@ -24,17 +31,26 @@ class LectorWrapper:
         except FileNotFoundError:
             raise ArchivoInexistenteError(nom_archivo)
 
-    def instanciar_dict_reader(self):
+    def instanciar_dict_reader(self, campos):
         if self.archivo is None:
             raise Exception
+        self.dict_reader = csv.DictReader(f=self.archivo, fieldnames=campos)
 
+    def buscar_por_cve(self, cve):
+        """
+        Regresa una lista de diccionarios formateados
+        """
+        pass
+
+
+class LectorPlantilla(LectorCSV):
+    def instanciar_dict_reader(self):
         campos = [
             "num",
             "prof",
             "cve",
             "mat",
             "gpo",
-            "cap",
             "ini_lun",
             "fin_lun",
             "ini_mar",
@@ -42,19 +58,18 @@ class LectorWrapper:
             "ini_mie",
             "fin_mie",
             "ini_jue",
-            "fin",
-            "jue",
+            "fin_jue",
             "ini_vie",
             "fin_vie",
             "ini_sab",
             "fin_sab",
         ]
 
-        self.dict_reader = csv.DictReader(f=self.archivo, fieldnames=campos)
+        super().instanciar_dict_reader(campos)
 
-    def buscar_por_num(self, num):
+    def buscar_por_num(self, num: str):
         """
-        Regresa un diccionario formateado
+        Regresa un HorarioClase()
         """
 
         fila = None
@@ -64,28 +79,102 @@ class LectorWrapper:
             raise DictReadeNoInstanciadoError
 
         for _fila in self.dict_reader:
-            if self.dict_reader["num"] == num:
+            #  print(_fila)
+            if _fila["num"] == num:
                 fila = _fila
                 break
 
-        dic_format = self.formatear_horario(fila)
+        if fila is None:
+            # TODO: Excepción?
+            pass
 
-        return dic_format
+        horario = self.instanciar_horario(fila)
 
-    def buscar_por_cve(self, cve):
-        """
-        Regresa una lista de diccionarios formateados
-        """
-        pass
+        return horario
 
-    def formatear_horario(self, fila):
-        pass
+    def instanciar_horario(self, fila):
+        h = HorarioClase()
+        h.set_num(fila["num"])
+        h.set_prof(fila["prof"])
+        h.set_gpo(fila["gpo"])
+        h.set_cve(fila["cve"])
+
+        grid_dict = dict()
+
+        i = -1
+        inicio = None
+        fin = None
+
+        values_list = [(key, val) for key, val in fila.items()]
+        values_list = values_list[5:]
+        values_list = [(key[4:], val) for key, val in values_list if val != ""]
+
+        for index in range(0, len(values_list), 2):
+            dia, hr_ini = values_list[index]
+            dia, hr_fin = values_list[index + 1]
+            grid_dict[dia] = (hr_ini, hr_fin)
+
+        h.set_grid(grid_dict)
+
+        return h
+
+
+class LectorMaterias(LectorCSV):
+    pass
+
+
+class LectorJSON:
+    def __init__(self):
+        self.archivo = None
+        self.data = None
+        self.lic = None
+
+        # Lista de claves
+        self.candidatos = list()
+
+        # Num cursar
+        self.num_cursar = int()
+
+        # Semilla
+        self.semilla = None
+
+    def __del__(self):
+        self.archivo.close()
+
+    def set_archivo(self, nom_archivo):
+
+        try:
+            self.archivo = open(nom_archivo, "r")
+            self.data = json.load(self.archivo)
+
+        except:
+            raise ArchivoInexistenteError(nom_archivo)
+
+    def parse_json(self):
+
+        try:
+            json_data = self.data
+
+            self.candidatos = list(json_data["candidatos"])
+            self.lic = json_data["licenciatura"]
+            self.num_cursar = json_data["num_cursar"]
+            self.semilla = json_data["prioridad"]
+
+        except JSONDecodeError:
+            raise JSONException("Error en archivo JSON")
 
 
 class ArchivoInexistenteError(Exception):
     def __init__(self, nom_arch):
+        super().__init__()
         self.nom_arch = nom_arch
 
 
 class DictReadeNoInstanciadoError(Exception):
     pass
+
+
+class JSONException(Exception):
+    def __init__(self, msg):
+        super().__init__()
+        self.msg = msg
