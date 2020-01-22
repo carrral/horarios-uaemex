@@ -19,7 +19,7 @@ def main(argc, argv):
     o alternativamente
 
         $ python3 main.py > resultados.txt
-    
+
     para usar el archivo de configuración por default.
     """
 
@@ -40,7 +40,6 @@ def main(argc, argv):
     else:
         print_error("Exceso de argumentos")
         exit(-1)
-            
     try:
         driver = Driver()
         driver.main(conf)
@@ -55,7 +54,7 @@ def main(argc, argv):
     Z = list()
 
     if driver.get_semilla() is None:
-        
+
         #Algoritmo sin semilla
         Z =  principal(C,w)
 
@@ -85,9 +84,9 @@ def main(argc, argv):
 def print_error(msg):
 
     print("""
-        ############
+        ============
             ERROR
-        ############
+        ============
 
         ->{}
 
@@ -102,6 +101,5 @@ def print_aviso(msg):
 
         ->{}
         """.format(msg))
-        
 
 main(argc,argv)

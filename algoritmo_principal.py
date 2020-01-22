@@ -6,7 +6,7 @@ def recursivo(L: list, C: list, Z: list, w: int):
 
         # C vacío
         # Fin de la ejecución
-        return True
+        pass
 
     else:
         Hk = C.pop()
@@ -18,7 +18,8 @@ def recursivo(L: list, C: list, Z: list, w: int):
 
                 # Si cumple con w
                 if Lc.len == w:
-                    Z.append(Lc)
+                    if Lc not in Z:
+                        Z.append(Lc)
                     
                     # Seguir probando con el original sin la opción actual
                     Cc = copy.deepcopy(C)
@@ -26,6 +27,12 @@ def recursivo(L: list, C: list, Z: list, w: int):
 
                 else:
                     recursivo(Lc, C, Z, w)
+
+            else:
+                # Seguir probando con el original sin la opción actual
+                Cc = copy.deepcopy(C)
+                recursivo(L, Cc, Z, w)
+
 
 def principal_semilla(C:list, S: HorarioClase, w: int):
 
