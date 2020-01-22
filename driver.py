@@ -14,9 +14,8 @@ class Driver:
         self.lector_materias = None
         self.lector_plantilla = None
 
-
         # Lista de objetos Materia()
-        self.materias= list()
+        self.materias = list()
 
         # Lista de listas de HorarioClase()
         self.candidatos = list()
@@ -25,11 +24,10 @@ class Driver:
         self.lic = None
         self.num_cursar = 0
 
-    def main(self,json_fname):
+    def main(self, json_fname):
         self.parse_json(json_fname)
         self.parse_conf(json_fname)
         self.display_conf()
-
 
     def parse_json(self, json_fname):
         self.lector_json = ls.LectorJSON(json_fname)
@@ -62,10 +60,12 @@ class Driver:
         self.lector_plantilla = ls.LectorPlantilla(self.nombre_arch_plantilla)
 
     def display_materias(self):
-        print("""
+        print(
+            """
         *==========================================*
                     Materias Elegidas
-        *==========================================*""")
+        *==========================================*"""
+        )
         pt = PrettyTable(["cve", "Nombre"])
         for materia in self.materias:
             pt.add_row(materia.get_attr_list())
@@ -73,41 +73,53 @@ class Driver:
         print(pt)
 
     def display_semilla(self):
-        print("""
+        print(
+            """
         *==========================================*
                        Licenciatura
         *==========================================*
 
-                           {}""".format(self.lic.upper()))
+                           {}""".format(
+                self.lic.upper()
+            )
+        )
 
-        print("""
+        print(
+            """
         *==========================================*
                         Prioridad 
-        *==========================================*""")
-        if self.semilla == None:
-            print("""
+        *==========================================*"""
+        )
+        if self.semilla is None:
+            print(
+                """
              *----------------------------------*
                No se eligió horario a priorizar
-             *----------------------------------*""")
+             *----------------------------------*"""
+            )
         else:
-            pt = PrettyTable(["num","prof","cve","gpo"])
+            pt = PrettyTable(["num", "prof", "cve", "gpo"])
             fila = [
-                    self.semilla.num,
-                    self.semilla.prof,
-                    self.semilla.cve,
-                    self.semilla.gpo
-                    ]
+                self.semilla.num,
+                self.semilla.prof,
+                self.semilla.cve,
+                self.semilla.gpo,
+            ]
             pt.add_row(fila)
             print(pt)
-       
+
     def display_conf(self):
         self.display_semilla()
         self.display_materias()
 
-        print("""
+        print(
+            """
         *==========================================*
             Num. de Materias a cursar: {}
-        *==========================================*""".format(self.num_cursar))
+        *==========================================*""".format(
+                self.num_cursar
+            )
+        )
 
     def get_num_cursar(self):
         return self.num_cursar
@@ -122,7 +134,7 @@ class Driver:
             self.candidatos.append(self.lector_plantilla.buscar_por_cve(cve))
             self.materias.append(self.lector_materias.buscar_por_cve(cve))
 
-    def get_candidatos(self)->list:
+    def get_candidatos(self) -> list:
         return self.candidatos
 
     def parse_semilla(self):
@@ -142,7 +154,7 @@ class Driver:
     def parse_lic(self):
         self.lic = self.lector_json.lic
 
-        if self.lic.lower()=="ico":
+        if self.lic.lower() == "ico":
             self.nombre_arch_plantilla = PLANTILLA_ICO
             self.nombre_arch_materias = MATERIAS_ICO
 
@@ -155,22 +167,27 @@ class Driver:
         self.num_cursar = self.lector_json.num_cursar
 
         if self.num_cursar <= 0:
-            raise CondicionesException("El número de materias a cursar no puede ser menor a 1")
+            raise CondicionesException(
+                "El número de materias a cursar no puede ser menor a 1"
+            )
 
         if self.num_cursar > len(self.materias):
-            raise CondicionesException("""
+            raise CondicionesException(
+                """
             El numero de materias  a cursar ({}) no puede ser mayor
-            que el número de candidatos ({})""".format(self.num_cursar, len(self.materias)))
-
+            que el número de candidatos ({})""".format(
+                    self.num_cursar, len(self.materias)
+                )
+            )
 
 
 class CondicionesException(Exception):
-
-    def __init__(self,cond):
+    def __init__(self, cond):
         super().__init__()
         self.msg = "La siguiente condición no pudo ser agregada:\n    {}".format(cond)
 
+
 class NoSoportadoException(Exception):
-    def __init__(self,opc,val):
+    def __init__(self, opc, val):
         super().__init__()
-        self.msg = "Opción no soportada todavía: {} = {}".format(opc,val)
+        self.msg = "Opción no soportada todavía: {} = {}".format(opc, val)
