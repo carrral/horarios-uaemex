@@ -4,6 +4,7 @@ from driver import *
 from algoritmo_principal import principal_semilla, principal, recursivo
 from horarios import *
 from lector import *
+import copy
 
 DEFAULT_CONF = "configuracion.json"
 
@@ -51,10 +52,12 @@ def main(argc, argv):
     C = driver.get_candidatos()
     w = driver.get_num_cursar()
 
+    Z = list()
+
     if driver.get_semilla() is None:
         
         #Algoritmo sin semilla
-        Z = principal(C,w)
+        Z =  principal(C,w)
 
     else:
 
@@ -91,7 +94,6 @@ def print_error(msg):
         """.format(msg))
 
 
-main(argc,argv)
 
 def print_aviso(msg):
     print("""
@@ -101,3 +103,5 @@ def print_aviso(msg):
         ->{}
         """.format(msg))
         
+
+main(argc,argv)

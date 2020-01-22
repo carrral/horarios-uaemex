@@ -16,8 +16,13 @@ def recursivo(L: list, C: list, Z: list, w: int):
             if horarios_compatibles(Lc,hi):
                 Lc.merge(hi)
 
+                # Si cumple con w
                 if Lc.len == w:
                     Z.append(Lc)
+                    
+                    # Seguir probando con el original sin la opción actual
+                    Cc = copy.deepcopy(C)
+                    recursivo(L, Cc, Z, w)
 
                 else:
                     recursivo(Lc, C, Z, w)
