@@ -79,6 +79,7 @@ class HorarioMaestro(Horario):
         #  Más que nada el nombre para mostrar del horario en particular
         self.titulo = titulo
         self.merged = list()
+        self.len = 0
 
     def get_titulo(self):
         return self.titulo
@@ -96,10 +97,11 @@ class HorarioMaestro(Horario):
                     self.grid[i][j] = horario.grid[i][j]
 
         self.merged.append(horario)
+        self.len += 1
 
     def display(self):
         super().display()
-        pt = PrettyTable(field_names=["num", "cve", "Prof.", "ID"])
+        pt = PrettyTable(field_names=["num", "cve","mat" ,"prof", "ID"])
 
         for h in self.merged:
             pt.add_row(h.get_attr_list())
@@ -114,13 +116,11 @@ class HorarioClase(Horario):
         los espacios que ocupará el horario ('X' por default)
         """
         super().__init__()
-        if len(x) > 1:
-            raise CaracterInvalidoException
 
         self.num = None
         self.cve = None
         self.prof = None
-        self.materia = None
+        self.nombre_materia = None
         self.gpo = None
         self.x = x
 
@@ -142,10 +142,10 @@ class HorarioClase(Horario):
     def get_num(self):
         return self.num
 
-    def set_materia(self, materia):
+    def set_nombre_materia(self, materia):
         self.materia = materia
 
-    def get_materia(self):
+    def get_nombre_materia(self):
         return self.materia
 
     def set_gpo(self, gpo):
@@ -189,6 +189,7 @@ class HorarioClase(Horario):
         l = list()
         l.append(self.num)
         l.append(self.cve)
+        l.append(self.get_nombre_materia())
         l.append(self.prof)
         l.append(self.x)
 

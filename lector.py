@@ -1,8 +1,11 @@
 import csv
 import json
-from horarios.horarios import HorarioClase
+from horarios import HorarioClase
 import pprint
+from materias import Materia
+import random
 
+IDS =["A","B","C","D","E","F","G","H","I","J","K","L", "M", "N", "O", "P", "Q", "R","S","T","U","V","W","X","Y","Z"] 
 
 class LectorCSV:
     """
@@ -15,11 +18,15 @@ class LectorCSV:
         self.archivo = None
         self.dict_reader = None
 
+
+    def __init__(self, csv_fname):
+        self.set_archivo(csv_fname)
+
     def __del__(self):
         if self.archivo is not None:
             self.archivo.close()
 
-    def set_archivo(self, nom_archivo):
+    def set_archivo(self, nom_archivo) -> None:
         """
         Abre el archivo csv para lectura
         """
@@ -32,18 +39,25 @@ class LectorCSV:
             raise ArchivoInexistenteError(nom_archivo)
 
     def instanciar_dict_reader(self, campos):
-        if self.archivo is None:
-            raise Exception
-        self.dict_reader = csv.DictReader(f=self.archivo, fieldnames=campos)
-
-    def buscar_por_cve(self, cve):
-        """
-        Regresa una lista de diccionarios formateados
-        """
-        pass
+        try:
+            self.dict_reader = csv.DictReader(f=self.archivo, fieldnames=campos)
+        except Error:
+            raise CSVException("Error al hacer el parseo del archivo csv")
 
 
 class LectorPlantilla(LectorCSV):
+    def __init__(self, csv_fname):
+        super().__init__(csv_fname)
+        self.instanciar_dict_reader()
+        self.available_ids = IDS.copy().reverse()
+
+    def get_id(self):
+        if  self.available_ids is None:
+            return random.choice(IDS) 
+
+        else:
+            return self.available_ids.pop()
+
     def instanciar_dict_reader(self):
         campos = [
             "num",
@@ -67,7 +81,7 @@ class LectorPlantilla(LectorCSV):
 
         super().instanciar_dict_reader(campos)
 
-    def buscar_por_num(self, num: str):
+    def buscar_por_num(self, num: str)-> HorarioClase():
         """
         Regresa un HorarioClase()
         """
@@ -75,8 +89,9 @@ class LectorPlantilla(LectorCSV):
         fila = None
         dic_format = None
 
+        self.archivo.seek(0)
         if self.dict_reader is None:
-            raise DictReadeNoInstanciadoError
+            raise DictReaderNoInstanciadoError
 
         for _fila in self.dict_reader:
             #  print(_fila)
@@ -92,19 +107,40 @@ class LectorPlantilla(LectorCSV):
 
         return horario
 
-    def instanciar_horario(self, fila):
-        h = HorarioClase()
+    def buscar_por_cve(self, cve) -> list():
+        """
+        Regresa una lista de HorarioClase() con cve=cve
+        """
+        if self.dict_reader is None:
+            raise DictReaderNoInstanciadoError
+
+        self.archivo.seek(0)
+        lista_clases = list()
+
+        for _fila in self.dict_reader:
+            if _fila["cve"] == cve:
+                lista_clases.append(_fila)
+
+        if not lista_clases:
+            raise ValorNoEncontradoException(cve)
+
+        return [self.instanciar_horario(fila) for fila in lista_clases]
+
+
+    def instanciar_horario(self, fila) -> HorarioClase():
+        h = HorarioClase(self.get_id())
         h.set_num(fila["num"])
         h.set_prof(fila["prof"])
         h.set_gpo(fila["gpo"])
         h.set_cve(fila["cve"])
+        h.set_nombre_materia(fila["mat"])
 
         grid_dict = dict()
 
-        i = -1
         inicio = None
         fin = None
 
+        # TODO: Agregar Expresión regular que reconozca horas en formatos no normalizados
         values_list = [(key, val) for key, val in fila.items()]
         values_list = values_list[5:]
         values_list = [(key[4:], val) for key, val in values_list if val != ""]
@@ -120,13 +156,45 @@ class LectorPlantilla(LectorCSV):
 
 
 class LectorMaterias(LectorCSV):
-    pass
+    def __init__(self, csv_fname):
+        super().__init__(csv_fname)
+        self.instanciar_dict_reader()
+
+    def instanciar_dict_reader(self):
+        campos = ["cve", "Materia"]
+        super().instanciar_dict_reader(campos)
+
+    def buscar_por_cve(self, cve):
+        """
+        Regresa un objeto Materia() con clave==cve
+        Si no la encuentra, regresa una excepción.
+        """
+
+        m = None
+
+        if self.dict_reader is None:
+            raise DictReaderNoInstanciadoError
+
+        self.archivo.seek(0)
+
+        for fila in self.dict_reader:
+            if fila["cve"] == cve:
+                m = Materia(fila["cve"], fila["Materia"])
+                break
+
+        if m is None:
+            raise ValorNoEncontradoException(cve)
+
+        return m
 
 
 class LectorJSON:
-    def __init__(self):
+    def __init__(self, json_fname):
+
         self.archivo = None
-        self.data = None
+        self.set_archivo(json_fname)
+
+        # Licenciatura
         self.lic = None
 
         # Lista de claves
@@ -137,6 +205,18 @@ class LectorJSON:
 
         # Semilla
         self.semilla = None
+
+        self.parse_json()
+
+    def get_candidatos(self):
+        return self.candidatos
+
+    def get_semilla(self):
+
+        if self.semilla == "":
+            return None
+        else:
+            return self.semilla
 
     def __del__(self):
         self.archivo.close()
@@ -167,10 +247,10 @@ class LectorJSON:
 class ArchivoInexistenteError(Exception):
     def __init__(self, nom_arch):
         super().__init__()
-        self.nom_arch = nom_arch
+        self.msg = "Error en el archivo '{}'".format(nom_arch)
 
 
-class DictReadeNoInstanciadoError(Exception):
+class DictReaderNoInstanciadoError(Exception):
     pass
 
 
@@ -178,3 +258,15 @@ class JSONException(Exception):
     def __init__(self, msg):
         super().__init__()
         self.msg = msg
+
+
+class CSVException(Exception):
+    def __init__(self):
+        super().__init__()
+        self.msg = msg
+
+
+class ValorNoEncontradoException(Exception):
+    def __init__(self, val):
+        super().__init__()
+        self.msg = "No se pudo encontrar un elemento con clave {}".format(val)
