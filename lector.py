@@ -101,7 +101,6 @@ class LectorPlantilla(LectorCSV):
             raise DictReaderNoInstanciadoError
 
         for _fila in self.dict_reader:
-            #  print(_fila)
             if _fila["num"] == num:
                 fila = _fila
                 break
@@ -126,13 +125,10 @@ class LectorPlantilla(LectorCSV):
 
         for _fila in self.dict_reader:
             claves = [s.replace(" ","") for s in _fila["cve"].split("/")]
-            #  claves =  _fila["cve"].split("/")
-            print("Claves: {}, separadas: {}".format(_fila["cve"],claves))
             if cve in claves:
                 lista_clases.append(_fila)
 
         if not lista_clases:
-            print("Not found in plantilla: {}".format(cve))
             raise ValorNoEncontradoException(cve)
 
         return [self.instanciar_horario(fila) for fila in lista_clases]
@@ -195,7 +191,6 @@ class LectorMaterias(LectorCSV):
                 break
 
         if m is None:
-            print("Not found in materias: {}".format(cve))
             raise ValorNoEncontradoException(cve)
 
         return m
