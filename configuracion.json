@@ -2,9 +2,8 @@
 {
     "licenciatura": "ICO",
 
-    "candidatos": ["L41006", "L41035", "L41041", "L41062", "L41048", "L41066", "L41071", "L41069"],
+    "candidatos": ["L41069", "L41083","L41062","L41017", "L41064","L41031"],
+    "num_cursar": 3,
 
-    "num_cursar": 6,
-
-    "prioridad": "137" 
+    "prioridad": "" 
 }

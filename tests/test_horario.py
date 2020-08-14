@@ -1,11 +1,17 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+# File              : test_horario.py
+# Author            : Carlos Carral <carloscarral13@gmail.com>
+# Date              : 12/08/2020
+# Last Modified Date: 12/08/2020
 import unittest
 from pprint import pprint
 import horarios as hs
 import lector as lc
 from driver import Driver,CondicionesException
 
-TEST_FILE = "recursos/plantilla_ico_2020A.csv"
-TEST_MATERIAS_CSV = "recursos/materias_ico_2020A.csv"
+TEST_FILE = "recursos/plantilla_ico_2020B.csv"
+TEST_MATERIAS_CSV = "recursos/materias_ico_2020B.csv"
 TEST_JSON = "configuracion.json"
 
 

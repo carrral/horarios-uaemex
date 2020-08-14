@@ -1,3 +1,9 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+# File              : lector.py
+# Author            : Carlos Carral <carloscarral13@gmail.com>
+# Date              : 12/08/2020
+# Last Modified Date: 12/08/2020
 import csv
 import json
 from horarios import HorarioClase
@@ -95,7 +101,6 @@ class LectorPlantilla(LectorCSV):
             raise DictReaderNoInstanciadoError
 
         for _fila in self.dict_reader:
-            #  print(_fila)
             if _fila["num"] == num:
                 fila = _fila
                 break
@@ -119,7 +124,8 @@ class LectorPlantilla(LectorCSV):
         lista_clases = list()
 
         for _fila in self.dict_reader:
-            if _fila["cve"] == cve:
+            claves = [s.replace(" ","") for s in _fila["cve"].split("/")]
+            if cve in claves:
                 lista_clases.append(_fila)
 
         if not lista_clases:
@@ -179,8 +185,9 @@ class LectorMaterias(LectorCSV):
         self.archivo.seek(0)
 
         for fila in self.dict_reader:
-            if fila["cve"] == cve:
-                m = Materia(fila["cve"], fila["Materia"])
+            claves = [s.replace(" ", "") for s in fila["cve"].split('/')]
+            if cve in claves:
+                m = Materia(cve, fila["Materia"])
                 break
 
         if m is None:

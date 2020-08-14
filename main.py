@@ -1,3 +1,9 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+# File              : main.py
+# Author            : Carlos Carral <carloscarral13@gmail.com>
+# Date              : 12/08/2020
+# Last Modified Date: 12/08/2020
 from sys import argv, version_info
 import os
 from driver import *
@@ -23,14 +29,17 @@ def main(argc, argv):
     para usar el archivo de configuración por default.
     """
 
-    if(version_info[0]==2):
-        #Corriendo python 2
-        print_error("Se está corriendo desde python 2.X.X, favor de actualizar a python >= 3.4")
+    if version_info[0] == 2:
+        # Corriendo python 2
+        print_error(
+            "Se está corriendo desde python 2.X.X, favor de actualizar a python >= 3.4"
+        )
+        exit(-1)
     if argc > 1:
         conf = argv[1]
 
         # Verificar que existe el archivo
-        if( not os.path.exists(conf)):
+        if not os.path.exists(conf):
             print_error("No se encontró un archivo de configuración '{}' ".format(conf))
             exit(-1)
 
@@ -54,30 +63,35 @@ def main(argc, argv):
     Z = list()
 
     if driver.get_semilla() is None:
-
-        #Algoritmo sin semilla
-        Z =  principal(C,w)
+       # Algoritmo sin semilla
+        Z = principal(C, w)
 
     else:
 
-        #Algoritmo con semilla
+        # Algoritmo con semilla
         S = driver.get_semilla()
-        Z = principal_semilla(C,S,w)
+        Z = principal_semilla(C, S, w)
 
     if not Z:
         #  Si Z está vacía
-        print_aviso(" No se encontraron resultados. Amplie los parámetros de la búsqueda")
+        print_aviso(
+            " No se encontraron resultados. Amplie los parámetros de la búsqueda"
+        )
 
     else:
 
-        print("""
+        print(
+            """
           ___________________________________________
            Se encontraron [{}] combinaciones posibles
           ___________________________________________
-            """.format(len(Z)))
+            """.format(
+                len(Z)
+            )
+        )
         for Li in Z:
             i = Z.index(Li)
-            print("-> Opción {}".format(i+1))
+            print("-> Opción {}".format(i + 1))
             Li.display()
 
 
@@ -90,16 +104,18 @@ def print_error(msg):
 
         ->{}
 
-        """.format(msg))
-
+        """.format(
+            msg
+        )
+    )
 
 
 def print_aviso(msg):
-    print("""
+    print(
+        """
         ||       ||
         || Aviso ||
 
         ->{}
         """.format(msg))
-
-main(argc,argv)
+main(argc, argv)
