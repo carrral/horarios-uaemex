@@ -2,8 +2,8 @@ from prettytable import PrettyTable
 import lector as ls
 
 LIM_SUPERIOR_CURSAR = 8
-PLANTILLA_ICO = "recursos/plantilla_ico_2020A.csv"
-MATERIAS_ICO = "recursos/materias_ico_2020A.csv"
+PLANTILLA_ICO = "recursos/plantilla_ico_2020B.csv"
+MATERIAS_ICO = "recursos/materias_ico_2020B.csv"
 
 
 class Driver:

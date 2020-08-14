@@ -125,11 +125,14 @@ class LectorPlantilla(LectorCSV):
         lista_clases = list()
 
         for _fila in self.dict_reader:
-            claves = [s.replace(" ","") for s in _fila["cve"].split(",")]
+            claves = [s.replace(" ","") for s in _fila["cve"].split("/")]
+            #  claves =  _fila["cve"].split("/")
+            print("Claves: {}, separadas: {}".format(_fila["cve"],claves))
             if cve in claves:
                 lista_clases.append(_fila)
 
         if not lista_clases:
+            print("Not found in plantilla: {}".format(cve))
             raise ValorNoEncontradoException(cve)
 
         return [self.instanciar_horario(fila) for fila in lista_clases]
@@ -186,11 +189,13 @@ class LectorMaterias(LectorCSV):
         self.archivo.seek(0)
 
         for fila in self.dict_reader:
-            if fila["cve"] == cve:
-                m = Materia(fila["cve"], fila["Materia"])
+            claves = [s.replace(" ", "") for s in fila["cve"].split('/')]
+            if cve in claves:
+                m = Materia(cve, fila["Materia"])
                 break
 
         if m is None:
+            print("Not found in materias: {}".format(cve))
             raise ValorNoEncontradoException(cve)
 
         return m
