@@ -1,9 +1,8 @@
 # Creador de Horarios 
-¿Cansado de que tus horarios queden de la 🍆? 
 
-Es tiempo de un cambio.
 Utiliza este sencillo script de python para encontrar un horario que se
 adapte a tus necesidades.
+
 
 ## Instrucciones
 ---
